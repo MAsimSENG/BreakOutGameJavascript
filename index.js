@@ -1,11 +1,11 @@
 var cvs = document.getElementById("canvas");
 var ctx = cvs.getContext("2d");
-var x = 0;
-var y =0;
-var dx = 0.25;
-var dy=0.5;
+var x = 10;
+var y =100;
+var dx = 2;
+var dy= 2;
 var pX = canvas.width/2;
-var pIx =50;
+var pIx =30;
 var pW= 80;
 var pH= 10;
 var pY=280;
@@ -17,6 +17,7 @@ var row =3;
 var col =3;
 var xoS =30;
 var yoS = 20;
+var score = 0;
 
 
 for(c=0;c<3;c++){
@@ -29,10 +30,10 @@ for(c=0;c<3;c++){
 
 document.addEventListener("keydown",movePaddle);
 function movePaddle(event){
-  if(event.keyCode == "39" && pX+pIx < canvas.width-pW ) {
+  if(event.keyCode == "39" && pX+pIx < canvas.width-50) {
     pX +=pIx;
   }
-  if(event.keyCode == "37" && pX-pIx >0){
+  if(event.keyCode == "37" && pX-15 >0){
     pX-=pIx;
   }
 }
@@ -41,20 +42,18 @@ var bX=0;
 function drawBricks(){
   for(c=0; c<col; c++){
     for(r=0;r<row;r++){
+      if(bA[c][r].status==false){
       bX= (10*r*(bW))+xoS;
       bA[c][r].x= bX;
       bY= c*(bH+bP)+yoS;
       bA[c][r].y= bY;
-
-
-      if(bA[c][r].status==false){
         ctx.beginPath();
         ctx.rect(bX,bY,pW,pH);
         ctx.fillStyle = "black";
         ctx.fill();
         ctx.closePath();
+}
 
-      }
     }
 
 }
@@ -77,16 +76,24 @@ function brickCollision(){
   for(c=0;c<col;c++){
     for(r=0;r<row;r++){
       var b= bA[c][r];
-      if(x>b.x && x<b.x+bW &&y>b.y && y<b.y+bH){
+      if(bA[c][r]!=[]){
+      if(x>b.x && x<b.x+pW &&y>b.y && y<b.y+pH){
+        bA[c][r]={};
+        score+=10;
         b.status=true;
         dy=-dy
       }
+    }
     }
   }
 }
 
 function draw(){
+
+
   ctx.clearRect(0,0,canvas.width, canvas.height);
+  ctx.font= "20px Arial";
+  ctx.fillText("Score:"+score,320,20);
   brickCollision();
   drawBricks();
   drawPaddle();
@@ -104,9 +111,10 @@ function draw(){
   }
   if( y> canvas.height){
     alert("gameOver");
-    clearInterval(interval);
   }
+  requestAnimationFrame(draw);
+
   x+=dx;
   y+=dy;
 }
-var interval = setInterval(draw,1);
+draw();
